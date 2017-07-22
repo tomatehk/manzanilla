@@ -1,0 +1,554 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container-fluid">
+
+{% if motos%}
+<h2 class="text-center">Repuestos de motos</h2>
+<table class="table table-bordered table-responsive table-hover">
+  <thead>
+  <tr class="active">
+  <th>Id</th>
+  <th>Producto</th>
+  <th>Modelo/TipoeloTipo</th>
+  <th>Cantidad</th>
+  <th>Costo</th>
+  <th>Creado</th>
+  <th>Actualizado</th>
+  <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for productom in motos %}
+    <tr>
+      <td>{{productom.id}}</td>
+      <td>{{productom.producto}}</td>
+      <td>{{productom.modeloTipo}}</td>
+      <td>{{productom.cantidad}}</td>
+      <td>Bs: {{productom.costo | number_format(2, ',', '.')}}</td>
+      <td>{{productom.creado | date('d-m-y')}}</td>
+      <td>{{productom.actualizado | date('d-m-y')}}</td>
+      <td class="text-center">
+        <div class="row" id="{{productom.id}}">
+          <form role="form" action="{{ path('productos_motos_compra', {'id' : ':id'}) }}" class="form-horizontal" novalidate="novalidate" method="POST">
+
+            <div class="col-xs-4">
+              <a class="btn btn-success boton-editarm {% if is_granted('ROLE_USER') %}{{'disabled'}}{% endif %}" href="{{ path('productos_motos_editar', {'id' : productom.id }) }}"><span class="glyphicon glyphicon-pencil"></span></a>
+              <a class="btn btn-danger boton-eliminarm {% if is_granted('ROLE_USER') %}{{'disabled'}}{% endif %}" href="#"><span class="glyphicon glyphicon-remove"></span></a>
+            </div>
+
+            <div class="col-xs-4">
+              <input class="form-control" type="number" name="cantidad" min="1"/>
+            </div>
+
+            <div class="col-xs-4">
+              <a class="btn btn-block btn-warning boton-compram" href="#" ><span class="glyphicon glyphicon-shopping-cart"></span></a>
+            </div>
+
+          </form>
+
+        </div>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+      <script type="text/javascript">
+        $(document).ready(function(){
+            $('.boton-compram').click(function(e){
+              e.preventDefault();
+              //obtenemos valores para pasarlos a la funcion post
+              var formulario = $(this).parents('form');
+              var id = formulario.parent().attr('id');
+              var url = formulario.attr('action').replace(':id', id);
+              var data = formulario.serialize();
+              var cantidad = formulario.find('input[name="cantidad"]').val();
+              //ejecutamos la peticion mediante post para restar el producto
+              //confirmacion con bootbox
+              bootbox.confirm({
+                  message: "¿Estas seguro de la venta?",
+                  buttons: {
+                      confirm: {
+                          label: 'Si',
+                          className: 'btn-success'
+                      },
+                      cancel: {
+                          label: 'No',
+                          className: 'btn-danger'
+                      }
+                  },
+                  callback: function (result) {
+                    if(cantidad > 0)
+                    {
+                        if(result){
+                      $.post(url,data,function(datos){
+                        bootbox.confirm('<p class="text-success">'+datos.mensaje+'<span class="glyphicon glyphicon-ok-    sign"></span></p>', 
+                        function(result){ 
+                          location.reload();
+                        });                                           
+                        var dialog = bootbox.dialog({
+                            title: 'Agregar informacion de cliente',
+                            message: '<p><i class="fa fa-spin fa-spinner"></i> Cargando...</p>'
+                        });
+                        //dialog
+                        dialog.init(function(){
+                            setTimeout(function(){
+                                urlr = "{{ path('registrar_cliente', { 'id': ':id' }) }}"
+                                urlrtotal = urlr.replace(':id', datos.id_registro)
+                                dialog.find('.bootbox-body').html('\
+                                    <div class="container-fluid">\
+                                      <form action="'+urlrtotal+'" method="post">\
+                                        <div class="form-group">\
+                                          <label for="nombre">Nombre:</label>\
+                                          <input type="text" class="form-control" id="email" name="nombre" placeholder="Nombre...">\
+                                        </div>\
+                                        <div class="form-group">\
+                                          <label for="cedula">Cedula:</label>\
+                                          <input type="text" class="form-control" id="cedula" name="cedula" placeholder="Ejemplo..2645354">\
+                                        </div>\
+                                        <div class="radio">\
+                                            <label><input type="radio" name="pago" value="Efectivo">Efectivo</label>\
+                                        </div>\
+                                        <div class="radio">\
+                                            <label><input type="radio" name="pago" value="Punto/tranferencia">Punto/tranferencia</label>\
+                                        </div>\
+                                        <button type="submit" class="btn btn-default">Guardar</button>\
+                                      </form>\
+                                    </div>\
+                                    ');
+                            }, 900);
+                        });
+                      })
+                        .fail(function(jqXHR, textStatus, errorThrown){
+                          var datos = jQuery.parseJSON(jqXHR.responseText);
+                          bootbox.alert({
+                            message: '<p class="text-danger">'+datos.mensaje+' <span class="glyphicon glyphicon-exclamation-sign"></span></p>',
+                            className: 'bb-alternate-modal'
+                          });
+
+                        });
+                        }
+                      }else{
+                    bootbox.alert({
+                      message: '<p class="text-danger">Numero de pedido invalido <span class="glyphicon glyphicexclamation-sign"></span></p>',
+                      className: 'bb-alternate-modal'
+                    });
+                      }
+                  }
+              });
+            });
+
+            $('.boton-eliminarm').click(function(e){
+              e.preventDefault();
+              //obtenemos valores para pasarlos a la funcion post
+              var formulario = $(this).parents('form');
+              var id = formulario.parent().attr('id');
+              var url = "{{ path('productos_motos_eliminar', {'id' : ':id'}) }}";
+              var urltotal = url.replace(':id', id);
+              //ejecutamos la peticion mediante post para restar el producto
+              //confirmacion con bootbox
+              bootbox.confirm({
+                  message: "¿Estas seguro de eliminar el producto?",
+                  buttons: {
+                      confirm: {
+                          label: 'Si',
+                          className: 'btn-success'
+                      },
+                      cancel: {
+                          label: 'No',
+                          className: 'btn-danger'
+                      }
+                  },
+                  callback: function (result) {
+                      if(result){
+
+                    $.post(urltotal, function(data){
+                      bootbox.alert('<p class="text-success">'+data.mensaje+'<span class="glyphicon glyphicon-ok-  sign"></span></p>');
+                      location.reload();
+                    }).fail(function(jqXHR, textStatus, errorThrown) {
+                      var datos = jQuery.parseJSON(jqXHR.responseText);
+
+                      bootbox.alert({
+                        message: '<p class="text-danger">'+datos.mensaje+' <span class="glyphicon glyphicon-exclamation-sign"></span></p>',
+                        className: 'bb-alternate-modal'
+                      });
+                      });
+                      }
+                  }
+              });
+            });
+
+        });
+
+      </script>
+
+  <hr />
+  {% endif %}
+
+{% if cauchos %}
+<h2 class="text-center">Lista de cauchos</h2>
+<table class="table table-bordered table-responsive table-hover">
+  <thead>
+  <tr class="active">
+  <th>Id</th>
+  <th>Productoducto</th>
+  <th>Modelo/TipoeloTipo</th>
+  <th>Cantidadtidad</th>
+  <th>Costoto</th>
+  <th>Creadoado</th>
+  <th>Actualizadoualizado</th>
+  <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for productom in cauchos %}
+    <tr>
+      <td>{{productom.id}}</td>
+      <td>{{productom.producto}}</td>
+      <td>{{productom.modeloTipo}}</td>
+      <td>{{productom.cantidad}}</td>
+      <td>Bs: {{productom.costo | number_format(2, ',', '.')}}</td>
+      <td>{{productom.creado | date('d-m-y')}}</td>
+      <td>{{productom.actualizado | date('d-m-y')}}</td>
+      <td class="text-center">
+        <div class="row" id="{{productom.id}}">
+          <form role="form" action="{{ path('productos_cauchos_compra', {'id' : ':id'}) }}" class="form-horizontal" novalidate="novalidate" method="POST">
+
+            <div class="col-xs-4">
+              <a class="btn btn-success boton-editarc {% if is_granted('ROLE_USER') %}{{'disabled'}}{% endif %}" href="{{ path('productos_cauchos_editar', {'id' : productom.id }) }}"><span class="glyphicon glyphicon-pencil"></span></a>
+              <a class="btn btn-danger boton-eliminarc {% if is_granted('ROLE_USER') %}{{'disabled'}}{% endif %}" href="#"><span class="glyphicon glyphicon-remove"></span></a>
+            </div>
+
+            <div class="col-xs-4">
+              <input class="form-control" type="number" name="cantidad" min="1"/>
+            </div>
+
+            <div class="col-xs-4">
+              <a class="btn btn-block btn-warning boton-comprac" href="#" ><span class="glyphicon glyphicon-shopping-cart"></span></a>
+            </div>
+
+          </form>
+
+        </div>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+      <script type="text/javascript">
+        $(document).ready(function(){
+            $('.boton-comprac').click(function(e){
+              e.preventDefault();
+              //obtenemos valores para pasarlos a la funcion post
+              var formulario = $(this).parents('form');
+              var id = formulario.parent().attr('id');
+              var url = formulario.attr('action').replace(':id', id);
+              var data = formulario.serialize();
+              var cantidad = formulario.find('input[name="cantidad"]').val();
+              //ejecutamos la peticion mediante post para restar el producto
+              //confirmacion con bootbox
+              bootbox.confirm({
+                  message: "¿Estas seguro de la venta?",
+                  buttons: {
+                      confirm: {
+                          label: 'Si',
+                          className: 'btn-success'
+                      },
+                      cancel: {
+                          label: 'No',
+                          className: 'btn-danger'
+                      }
+                  },
+                  callback: function (result) {
+                    if(cantidad > 0)
+                    {
+                        if(result){
+                      $.post(url,data,function(datos){
+                        bootbox.confirm('<p class="text-success">'+datos.mensaje+'<span class="glyphicon glyphicon-ok-    sign"></span></p>', 
+                        function(result){ 
+                          location.reload();
+                        });                                           
+                        var dialog = bootbox.dialog({
+                            title: 'Agregar informacion de cliente',
+                            message: '<p><i class="fa fa-spin fa-spinner"></i> Cargando...</p>'
+                        });
+                        //dialog
+                        dialog.init(function(){
+                            setTimeout(function(){
+                                urlr = "{{ path('registrar_cliente', { 'id': ':id' }) }}"
+                                urlrtotal = urlr.replace(':id', datos.id_registro)
+                                dialog.find('.bootbox-body').html('\
+                                    <div class="container-fluid">\
+                                      <form action="'+urlrtotal+'" method="post">\
+                                        <div class="form-group">\
+                                          <label for="nombre">Nombre:</label>\
+                                          <input type="text" class="form-control" id="email" name="nombre" placeholder="Nombre...">\
+                                        </div>\
+                                        <div class="form-group">\
+                                          <label for="cedula">Cedula:</label>\
+                                          <input type="text" class="form-control" id="cedula" name="cedula" placeholder="Ejemplo..2645354">\
+                                        </div>\
+                                        <div class="radio">\
+                                            <label><input type="radio" name="pago" value="Efectivo">Efectivo</label>\
+                                        </div>\
+                                        <div class="radio">\
+                                            <label><input type="radio" name="pago" value="Punto/tranferencia">Punto/tranferencia</label>\
+                                        </div>\
+                                        <button type="submit" class="btn btn-default">Guardar</button>\
+                                      </form>\
+                                    </div>\
+                                    ');
+                            }, 900);
+                        });
+                      })
+                        .fail(function(jqXHR, textStatus, errorThrown){
+                          var datos = jQuery.parseJSON(jqXHR.responseText);
+                          bootbox.alert({
+                            message: '<p class="text-danger">'+datos.mensaje+' <span class="glyphicon glyphicon-exclamation-sign"></span></p>',
+                            className: 'bb-alternate-modal'
+                          });
+
+                        });
+                        }
+                      }else{
+                    bootbox.alert({
+                      message: '<p class="text-danger">Numero de pedido invalido <span class="glyphicon glyphicexclamation-sign"></span></p>',
+                      className: 'bb-alternate-modal'
+                    });
+                      }
+                  }
+              });
+            });
+
+            $('.boton-eliminarc').click(function(e){
+              e.preventDefault();
+              //obtenemos valores para pasarlos a la funcion post
+              var formulario = $(this).parents('form');
+              var id = formulario.parent().attr('id');
+              var url = "{{ path('productos_cauchos_eliminar', {'id' : ':id'}) }}";
+              var urltotal = url.replace(':id', id);
+              //ejecutamos la peticion mediante post para restar el producto
+              //confirmacion con bootbox
+              bootbox.confirm({
+                  message: "¿Estas seguro de eliminar el producto?",
+                  buttons: {
+                      confirm: {
+                          label: 'Si',
+                          className: 'btn-success'
+                      },
+                      cancel: {
+                          label: 'No',
+                          className: 'btn-danger'
+                      }
+                  },
+                  callback: function (result) {
+                      if(result){
+
+                    $.post(urltotal, function(data){
+                      bootbox.alert('<p class="text-success">'+data.mensaje+'<span class="glyphicon glyphicon-ok-  sign"></span></p>');
+                      location.reload();
+                    }).fail(function(jqXHR, textStatus, errorThrown) {
+                      var datos = jQuery.parseJSON(jqXHR.responseText);
+
+                      bootbox.alert({
+                        message: '<p class="text-danger">'+datos.mensaje+' <span class="glyphicon glyphicon-exclamation-sign"></span></p>',
+                        className: 'bb-alternate-modal'
+                      });
+                      });
+                      }
+                  }
+              });
+            });
+
+        });
+
+      </script>
+
+  <hr />
+  {% endif %}
+
+
+    {% if lubricantes%}
+    <h2 class="text-center">Lubricantes</h2>
+    <table class="table table-bordered table-responsive table-hover">
+      <thead>
+      <tr class="active">
+      <th>ID</th>
+      <th>Aceite</th>
+      <th>Tipo</th>
+      <th>Cantidad</th>
+      <th>Costo</th>
+      <th>Creado</th>
+      <th>Actualizado</th>
+      <th>Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for productol in lubricantes %}
+        <tr>
+          <td>{{productol.id}}</td>
+          <td>{{productol.aceite}}</td>
+          <td>{{productol.tipo}}</td>
+          <td>{{productol.cantidad}}</td>
+          <td>Bs: {{productol.costo | number_format(2, ',', '.')}}</td>
+          <td>{{productol.creado | date('d-m-y')}}</td>
+          <td>{{productol.actualizado | date('d-m-y')}}</td>
+          <td class="text-center">
+            <div class="row" id="{{productol.id}}">
+              <form role="form" action="{{ path('productos_lubricantes_compra', {'id' : ':id'}) }}" class="form-horizontal" novalidate="novalidate" method="POST">
+
+                <div class="col-xs-3">
+                  <a class="btn btn-success boton-editarl {% if is_granted('ROLE_USER') %}{{'disabled'}}{% endif %}" href="{{ path('productos_lubricantes_editar', {'id' : productol.id }) }}"><span class="glyphicon glyphicon-pencil"></span></a>
+                  <a class="btn btn-danger boton-eliminarl {% if is_granted('ROLE_USER') %}{{'disabled'}}{% endif %}" href="#"><span class="glyphicon glyphicon-remove"></span></a>
+                </div>
+
+                <div class="col-xs-3">
+                  <input class="form-control" type="number" name="cantidad" min="1"/>
+                </div>
+
+                <div class="col-xs-6">
+                  <a class="btn btn-block btn-warning boton-compral" href="#" ><span class="glyphicon glyphicon-shopping-cart"></span></a>
+                </div>
+
+              </form>
+
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+      <script type="text/javascript">
+        $(document).ready(function(){
+            $('.boton-compral').click(function(e){
+              e.preventDefault();
+              //obtenemos valores para pasarlos a la funcion post
+              var formulario = $(this).parents('form');
+              var id = formulario.parent().attr('id');
+              var url = formulario.attr('action').replace(':id', id);
+              var data = formulario.serialize();
+              var cantidad = formulario.find('input[name="cantidad"]').val();
+              //ejecutamos la peticion mediante post para restar el producto
+              //confirmacion con bootbox
+              bootbox.confirm({
+                  message: "¿Estas seguro de la venta?",
+                  buttons: {
+                      confirm: {
+                          label: 'Si',
+                          className: 'btn-success'
+                      },
+                      cancel: {
+                          label: 'No',
+                          className: 'btn-danger'
+                      }
+                  },
+                  callback: function (result) {
+                    if(cantidad > 0)
+                    {
+                        if(result){
+                      $.post(url,data,function(datos){
+                        bootbox.confirm('<p class="text-success">'+datos.mensaje+'<span class="glyphicon glyphicon-ok-    sign"></span></p>', 
+                        function(result){ 
+                          location.reload();
+                        });                                           
+                        var dialog = bootbox.dialog({
+                            title: 'Agregar informacion de cliente',
+                            message: '<p><i class="fa fa-spin fa-spinner"></i> Cargando...</p>'
+                        });
+                        //dialog
+                        dialog.init(function(){
+                            setTimeout(function(){
+                                urlr = "{{ path('registrar_cliente', { 'id': ':id' }) }}"
+                                urlrtotal = urlr.replace(':id', datos.id_registro)
+                                dialog.find('.bootbox-body').html('\
+                                    <div class="container-fluid">\
+                                      <form action="'+urlrtotal+'" method="post">\
+                                        <div class="form-group">\
+                                          <label for="nombre">Nombre:</label>\
+                                          <input type="text" class="form-control" id="email" name="nombre" placeholder="Nombre...">\
+                                        </div>\
+                                        <div class="form-group">\
+                                          <label for="cedula">Cedula:</label>\
+                                          <input type="text" class="form-control" id="cedula" name="cedula" placeholder="Ejemplo..2645354">\
+                                        </div>\
+                                        <div class="radio">\
+                                            <label><input type="radio" name="pago" value="Efectivo">Efectivo</label>\
+                                        </div>\
+                                        <div class="radio">\
+                                            <label><input type="radio" name="pago" value="Punto/tranferencia">Punto/tranferencia</label>\
+                                        </div>\
+                                        <button type="submit" class="btn btn-default">Guardar</button>\
+                                      </form>\
+                                    </div>\
+                                    ');
+                            }, 900);
+                        });
+                      })
+                        .fail(function(jqXHR, textStatus, errorThrown){
+                          var datos = jQuery.parseJSON(jqXHR.responseText);
+                          bootbox.alert({
+                            message: '<p class="text-danger">'+datos.mensaje+' <span class="glyphicon glyphicon-exclamation-sign"></span></p>',
+                            className: 'bb-alternate-modal'
+                          });
+
+                        });
+                        }
+                      }else{
+                    bootbox.alert({
+                      message: '<p class="text-danger">Numero de pedido invalido <span class="glyphicon glyphicexclamation-sign"></span></p>',
+                      className: 'bb-alternate-modal'
+                    });
+                      }
+                  }
+              });
+            });
+
+            $('.boton-eliminarl').click(function(e){
+              e.preventDefault();
+              //obtenemos valores para pasarlos a la funcion post
+              var formulario = $(this).parents('form');
+              var id = formulario.parent().attr('id');
+              var url = "{{ path('productos_lubricantes_eliminar', {'id' : ':id'}) }}";
+              var urltotal = url.replace(':id', id);
+              //ejecutamos la peticion mediante post para restar el producto
+              //confirmacion con bootbox
+              bootbox.confirm({
+                  message: "¿Estas seguro de eliminar el producto?",
+                  buttons: {
+                      confirm: {
+                          label: 'Si',
+                          className: 'btn-success'
+                      },
+                      cancel: {
+                          label: 'No',
+                          className: 'btn-danger'
+                      }
+                  },
+                  callback: function (result) {
+                      if(result){
+
+                    $.post(urltotal, function(data){
+                      bootbox.alert('<p class="text-success">'+data.mensaje+'<span class="glyphicon glyphicon-ok-	sign"></span></p>');
+                      location.reload();
+                    }).fail(function(jqXHR, textStatus, errorThrown) {
+                      var datos = jQuery.parseJSON(jqXHR.responseText);
+
+                      bootbox.alert({
+                        message: '<p class="text-danger">'+datos.mensaje+' <span class="glyphicon glyphicon-exclamation-sign"></span></p>',
+                        className: 'bb-alternate-modal'
+                      });
+                      });
+                      }
+                  }
+              });
+            });
+
+        });
+
+      </script>
+    {% endif %}
+  </div>
+{% endblock %}

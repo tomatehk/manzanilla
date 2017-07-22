@@ -1,0 +1,35 @@
+productos:
+    resource: "@ProductosBundle/Resources/config/routing.yml"
+    prefix:   /
+
+principal:
+    path: /
+    defaults: { _controller: ProductosBundle:Default:index }
+
+registro_ventas:
+    path: /registro
+    defaults: { _controller: ProductosBundle:Default:registro }
+
+registro_eliminar:
+    path: /registro/eliminar/{id}
+    defaults: { _controller: ProductosBundle:Default:registroEliminar }
+
+eliminar_registro:
+    path: /registro/borrar
+    defaults: { _controller:ProductosBundle:Default:borrar }
+
+aumentar_precio:
+    path: /aumentar/precio
+    defaults: { _controller:ProductosBundle:Default:aumentar }
+
+buscar_global:
+    path: /buscar/global
+    defaults: { _controller:ProductosBundle:Default:buscarGlobal }
+
+registro:
+    path: /registro/guardar
+    defaults: { _controller:ProductosBundle:Default:totalRegistro }
+
+informacion:
+    path: /informacion
+    defaults: { _controller:ProductosBundle:Default:informacion }

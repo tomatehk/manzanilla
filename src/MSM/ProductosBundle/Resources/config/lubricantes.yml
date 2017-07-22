@@ -1,0 +1,33 @@
+pruductos_lubricantes_lista:
+    path: /productos
+    defaults: { _controller: ProductosBundle:Lubricantes:lista }
+
+productos_lubricantes_vista:
+    path: /producto/{id}
+    defaults: { _controller: ProductosBundle:Lubricantes:vista }
+    requirements:
+        id: '\d+'
+
+productos_lubricantes_agregar:
+    path: /producto/agregar
+    defaults: { _controller: ProductosBundle:Lubricantes:agregar }
+
+#Procesamiento de formularios por ruta /producto/agregar
+productos_agregar_lubricantes_check:
+    path: /producto/agregar/check
+    defaults: { _controller: ProductosBundle:Lubricantes:agregarCheck }
+    methods: [POST]
+
+productos_lubricantes_editar:
+    path: /producto/editar/{id}
+    defaults: { _controller: ProductosBundle:Lubricantes:editar }
+
+productos_lubricantes_eliminar:
+    path: /producto/eliminar/{id}
+    defaults: { _controller: ProductosBundle:Lubricantes:eliminar }
+    methods: [POST ,DELETE]
+
+productos_lubricantes_compra:
+    path: /producto/compra/{id}
+    defaults: { _controller: ProductosBundle:Lubricantes:compra }
+    methods: [POST, PUT]

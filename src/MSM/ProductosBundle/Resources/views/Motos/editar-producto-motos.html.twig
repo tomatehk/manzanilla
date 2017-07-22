@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<div class="main container">
+<h1 class="text-center">Editar producto</h1>
+
+{% for flash_message in app.session.flashBag.get('noticia') %}
+	<div class="alert alert-success">
+		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+   		<strong>Correcto!</strong> {{ flash_message }}!.
+  	</div>
+{% endfor %}
+
+<div class="row well">
+<div class="col-md-6">
+<div class="page-header">
+{{ form_start(form, {'attr' : {'role' : 'form' ,'novalidate' : 'novalidate'} }) }}
+	
+<div class="form-group">
+	{{ form_label(form.producto, 'Producto') }}
+	{{ form_widget(form.producto, {'attr' : {'class': 'form-control'}}) }}
+	<span class="text-danger">{{ form_errors(form.producto) }}</span>
+</div>
+
+<div class="form-group">
+	{{ form_label(form.modeloTipo, 'Modelo/Tipo') }}
+	{{ form_widget(form.modeloTipo, {'attr' : {'class': 'form-control'}}) }}
+	<span class="text-danger">{{ form_errors(form.modeloTipo) }}</span>
+</div>
+
+<div class="row form-group">
+	<div class="col-xs-2">
+	{{ form_label(form.cantidad, 'Cantidad') }}
+	{{ form_widget(form.cantidad, {'attr' : {'class': 'form-control'}}) }}
+	</div>	
+	<div class="col-xs-12">
+		<span class="text-danger">{{ form_errors(form.cantidad) }}</span>
+	</div>
+</div>
+
+<div class="form-group">
+	{{ form_label(form.costo, 'Costo/Valor') }}
+	{{ form_widget(form.costo, {'attr' : {'class': 'form-control'}}) }}
+	<span class="text-danger">{{ form_errors(form.costo) }}</span>
+</div>
+
+<div class="form-group">
+	{{ form_widget(form.Agregar, {'attr' : {'class': 'btn btn-primary'}}) }}
+</div>
+	
+{{ form_end(form) }}
+</div>
+</div>
+</div>
+</div>
+
+{% endblock %}

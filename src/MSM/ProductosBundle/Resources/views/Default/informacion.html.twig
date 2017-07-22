@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container">
+	<h1 class="text-center">Informacion de los productos</h1>
+<table class="table table-bordered table-responsive table-hover">
+	<thead>
+		<tr>
+			<th class="text-center">Cantidad total de productos</th>
+			<th class="text-center">Dinero total en productos</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td class="text-center">{{ totalProductos }}</td>
+			<td class="text-center">Bs. {{ dineroTotal | number_format(2, ',', '.') }}</td>
+		</tr>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td class="text-center" colspan="2"><a class="btn btn-primary" href="{{ path('inventario') }}"><span class="glyphicon glyphicon-print"></span>Imprimir inventario</a></td>
+		</tr>
+	</tfoot>
+</table>
+</div>
+{% endblock %}

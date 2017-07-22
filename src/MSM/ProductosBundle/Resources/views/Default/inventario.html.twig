@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container-fluid text-center">
+{% if motos or carros or lubricantes%}
+<button type="button" onclick="window.print()" id="imprimir" class="btn btn-default btn-primary">Guardar <span class="glyphicon glyphicon-print"></span></button>
+{% else %}
+<div class="container-fluid">
+ 	<div class="jumbotron">
+   		 <h1 class="text-center">No hay ningun producto en el inventario</h1>
+  </div>
+</div>
+{% endif %}
+
+{% if motos %}
+<h2 class="text-center">Repuestos de motos</h2>
+<table class="table table-bordered table-responsive table-hover">
+  <thead>
+  <tr class="active">
+  <th>Id</th>
+  <th>Productoducto</th>
+  <th>Modelo/TipoeloTipo</th>
+  <th>Cantidadtidad</th>
+  <th>Costoto</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for productom in motos %}
+    <tr>
+      <td>{{productom.id}}</td>
+      <td>{{productom.producto}}</td>
+      <td>{{productom.modeloTipo}}</td>
+      <td>{{productom.cantidad}}</td>
+      <td>Bs: {{productom.costo | number_format(2, ',', '.')}}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+{% if cauchos %}
+<h2 class="text-center">Lista de cauchos</h2>
+<table class="table table-bordered table-responsive table-hover">
+  <thead>
+  <tr class="active">
+  <th>Id</th>
+  <th>Productoducto</th>
+  <th>Modelo/TipoeloTipo</th>
+  <th>Cantidadtidad</th>
+  <th>Costoto</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for productom in cauchos %}
+    <tr>
+      <td>{{productom.id}}</td>
+      <td>{{productom.producto}}</td>
+      <td>{{productom.modeloTipo}}</td>
+      <td>{{productom.cantidad}}</td>
+      <td>Bs: {{productom.costo | number_format(2, ',', '.')}}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+{% if lubricantes%}
+<h2 class="text-center">Lubricantes</h2>
+<table class="table table-bordered table-responsive table-hover">
+  <thead>
+  <tr class="active">
+  <th>ID</th>
+  <th>Aceite</th>
+  <th>Tipo</th>
+  <th>Cantidad</th>
+  <th>Costo</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for productol in lubricantes %}
+    <tr>
+      <td>{{productol.id}}</td>
+      <td>{{productol.aceite}}</td>
+      <td>{{productol.tipo}}</td>
+      <td>{{productol.cantidad}}</td>
+      <td>Bs: {{productol.costo | number_format(2, ',', '.')}}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+productos_principal:
+    path:     /
+    defaults: { _controller: ProductosBundle:Default:index }
+
+productos_motos:
+    resource: "@ProductosBundle/Resources/config/motos.yml"
+    prefix:   /motos
+
+productos_cauchos:
+    resource: "@ProductosBundle/Resources/config/cauchos.yml"
+    prefix:   /cauchos
+
+productos_lubricantes:
+    resource: "@ProductosBundle/Resources/config/lubricantes.yml"
+    prefix:   /lubricantes
+
+seguridad:
+    resource: "@ProductosBundle/Resources/config/seguridad.yml"
+    prefix:   /
+
+buscador_global:
+    path:    /buscar/{producto}
+    defaults: { _controller: ProductosBundle:Default:buscadorGlobal }
+
+inventario:
+    path: /inventario/imprimir
+    defaults: { _controller: ProductosBundle:Default:inventario }
+
+registrar_cliente:
+    path: /registro/cliente/{id}
+    defaults: { _controller: ProductosBundle:Default:registrarClienteVenta }

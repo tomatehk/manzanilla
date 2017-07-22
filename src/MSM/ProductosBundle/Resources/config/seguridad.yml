@@ -1,0 +1,7 @@
+#iniciar sesion
+login:
+    path: /login
+    defaults: { _controller: ProductosBundle:Seguridad:login }
+#salir o cerrar sesion
+logout:
+    path: /logout

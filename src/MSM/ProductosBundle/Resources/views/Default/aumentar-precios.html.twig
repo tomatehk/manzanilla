@@ -1,0 +1,83 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+{% for flash_message in app.session.flashBag.get('mensaje') %}
+	<div class="alert alert-success">
+		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+   		<strong>Correcto!</strong> Se ha guardado el producto!.
+  	</div>
+{% endfor %}
+
+{% for flash_message in app.session.flashBag.get('error') %}
+	<div class="alert alert-danger">
+		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+   		<strong>Correcto!</strong> Se ha guardado el producto!.
+  	</div>
+{% endfor %}
+
+<h1 class="text-center">Aumentar precios</h1>
+<form action="" method="POST" id="formulario">
+<div class="container text-center">
+	<div class="form-group">	
+		<label for="sel1">Porcentaje a aumentar precios:</label>
+			<select class="form-control input-lg" id="sel" name="porcentaje">
+			{# creamos la lista mediante un for #}
+			{% for i in 0..100 %}
+					<option value="{{ i }}">{{ i }}%</option>
+			{% endfor %}
+			</select>
+	</div>
+	<div class="form-group">
+	<div class="col-xs-12">
+	<a class="btn btn-lg btn-primary" id="aumentar">Aumentar <span class="glyphicon glyphicon-arrow-up"></a>
+	</div>
+	</div>
+</div>
+</form>
+<script>
+
+	$('#aumentar').click(function(e){
+		e.preventDefault();
+		var porcentaje = $('#sel').val();
+		var url = "{{ path('aumentar_precio') }}"
+		var data = $('#formulario').serialize();
+
+		bootbox.confirm({
+		message: "¿Estas que quieres aumentar en " + porcentaje + "%",
+		buttons: {
+			confirm: {
+				label: 'Si',
+				className: 'btn-success'
+			},
+			cancel: {
+				label: 'No',
+				className: 'btn-danger'
+			}
+		},
+		callback: function (result) {
+
+				if(result){
+					$.post(url,data,function(datos){
+						bootbox.alert({
+							message: '<p class="text-success">'+datos.mensaje+'<span class="glyphicon glyphicon-ok-	sign"></span></p>',
+							className: 'bb-alternate-modal'
+						});
+						location.reload();
+					})
+						.fail(function(jqXHR, textStatus, errorThrown){
+							var datos = jQuery.parseJSON(jqXHR.responseText);
+							bootbox.alert({
+								message: '<p class="text-danger">'+datos.mensaje+' <span class="glyphicon glyphicon-exclamation-sign"></span></p>',
+								className: 'bb-alternate-modal'
+							});
+
+						});
+				}
+		}
+	});		
+	});
+
+</script>
+
+{% endblock %}

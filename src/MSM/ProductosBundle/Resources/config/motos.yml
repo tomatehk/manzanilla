@@ -1,0 +1,33 @@
+pruductos_motos_lista:
+    path: /productos
+    defaults: { _controller: ProductosBundle:Motos:lista }
+
+productos_motos_vista:
+    path: /producto/{id}
+    defaults: { _controller: ProductosBundle:Motos:vista }
+    requirements:
+        id: '\d+'
+
+productos_motos_agregar:
+    path: /producto/agregar
+    defaults: { _controller: ProductosBundle:Motos:agregar }
+
+#Procesamiento de formularios por ruta /producto/agregar
+productos_agregar_motos_check:
+    path: /producto/agregar/check
+    defaults: { _controller: ProductosBundle:Motos:agregarCheck }
+    methods: [POST]
+
+productos_motos_editar:
+    path: /producto/editar/{id}
+    defaults: { _controller: ProductosBundle:Motos:editar }
+
+productos_motos_eliminar:
+    path: /producto/eliminar/{id}
+    defaults: { _controller: ProductosBundle:Motos:eliminar }
+    methods: [POST, DELETE]
+
+productos_motos_compra:
+    path: /producto/compra/{id}
+    defaults: { _controller: ProductosBundle:Motos:compra }
+    methods: [POST, PUT]

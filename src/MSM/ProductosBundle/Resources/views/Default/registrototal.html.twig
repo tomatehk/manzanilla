@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container text-center">
+	<h1>Registro</h1>
+<div class="row">
+<div class="col-md-12">
+	<button type="button" onclick="window.print()" id="imprimir" class="btn btn-default btn-primary">Guardar <span class="glyphicon glyphicon-print"></span></button>
+	<table class="table table-bordered table-responsive table-hover">
+		<caption>Registro de ventas {{ "now"|date("m/d/Y") }}</caption>
+		<thead>
+			<tr>
+				<th>Producto</th>
+				<th>Descripcion</th>
+				<th>Cantidad</th>
+				<th>Costo</th>
+				<th>Cliente</th>
+				<th>Cedula</th>
+				<th>Tipo/pago</th>
+				<th>Creado</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for venta in registro %}
+				<tr>
+					<td>{{ venta.producto }}</td>
+					<td>{{ venta.descripcion }}</td>
+					<td>{{ venta.cantidad }}</td>
+					<td>{{ venta.costo | number_format(2, ',', '.') }}</td>
+					<td>{{ venta.nombre }}</td>
+					<td>{{ venta.cedula }}</td>
+					<td>{{ venta.tipoPago }}</td>
+					<td>{{ venta.creado | date('d-m-y')}}</td>
+				</tr>
+			{% endfor %}	
+			
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan="9">Dinero en ventas: {{ dinero | number_format(2, ',', '.') }}</td>
+			</tr>
+		</tfoot>
+	</table>
+</div>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+pruductos_cauchos_lista:
+    path: /productos
+    defaults: { _controller: ProductosBundle:Cauchos:lista }
+
+productos_cauchos_vista:
+    path: /producto/{id}
+    defaults: { _controller: ProductosBundle:Cauchos:vista }
+    requirements:
+        id: '\d+'
+
+productos_cauchos_agregar:
+    path: /producto/agregar
+    defaults: { _controller: ProductosBundle:Cauchos:agregar }
+
+#Procesamiento de formularios por ruta /producto/agregar
+productos_agregar_cauchos_check:
+    path: /producto/agregar/check
+    defaults: { _controller: ProductosBundle:Cauchos:agregarCheck }
+    methods: [POST]
+
+productos_cauchos_editar:
+    path: /producto/editar/{id}
+    defaults: { _controller: ProductosBundle:Cauchos:editar }
+
+productos_cauchos_eliminar:
+    path: /producto/eliminar/{id}
+    defaults: { _controller: ProductosBundle:Cauchos:eliminar }
+    methods: [POST ,DELETE]
+
+productos_cauchos_compra:
+    path: /producto/compra/{id}
+    defaults: { _controller: ProductosBundle:Cauchos:compra }
+    methods: [POST, PUT]

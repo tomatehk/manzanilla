@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h1 class="text-center">Lista de lubricantes</h1>
+<div class="container-fluid">
+
+<form class="form-inline" action="{{ path('pruductos_lubricantes_lista') }}" method="POST" id="producto-buscar">
+  <div class="form-group">
+    <input type="text" class="form-control" name="producto" placeholder="Buscar producto" autocomplete="off">
+  </div>
+    <button class="btn btn-primary" id="buscar"><span class="glyphicon glyphicon-search"></span></button>
+    <a href="{{ path('pruductos_lubricantes_lista') }}" class="btn btn-default btn-success">Lista completa</a>
+    <a href="{{ path('productos_lubricantes_agregar') }}" class="btn btn-default btn-warning">Agregar <span class="glyphicon glyphicon-plus"></span></a>
+ </form>
+
+<br />
+ <div class="container-fluid">
+ 	<div class="jumbotron">
+   		<h1>No se encuentran lubricantes</h1>
+   	</div>
+ </div>
+{% endblock %}

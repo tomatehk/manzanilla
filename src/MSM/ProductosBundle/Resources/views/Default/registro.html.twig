@@ -1,0 +1,140 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h1 class="text-center">Registro de ventas</h1>
+<div class="container-fluid">
+  <table class="table table-bordered table-responsive table-hover">
+    <thead>
+      <tr class="active">
+		<th> {{ knp_pagination_sortable(pagination, 'Producto', 'a.producto') }} 	</th>
+		<th> {{ knp_pagination_sortable(pagination, 'Descripcion', 'a.descripcion') }} </th>
+		<th> {{ knp_pagination_sortable(pagination, 'Cantidad', 'a.cantidad') }} </th>
+		<th> {{ knp_pagination_sortable(pagination, 'Costo', 'a.costo') }} </th>
+        <th> {{ knp_pagination_sortable(pagination, 'Cliente', 'a.nombre') }} </th>
+        <th> {{ knp_pagination_sortable(pagination, 'Cedula', 'a.cedula') }} </th>
+        <th> {{ knp_pagination_sortable(pagination, 'Tipo/pago', 'a.tipo_pago') }} </th>
+		<th> {{ knp_pagination_sortable(pagination, 'Creado', 'a.creado') }} </th>
+		<th> Acciones </th>
+      </tr>
+    </thead>
+    <tbody>
+
+		{% for producto in pagination %}
+			<tr>
+				<td>{{producto.producto}}</td>
+				<td>{{producto.descripcion}}</td>
+				<td>{{producto.cantidad}}</td>
+				<td>Bs: {{producto.costo | number_format(2, ',', '.')}}</td>
+                <td>{{producto.nombre}}</td>
+                <td>{{producto.cedula}}</td>
+                <td>{{producto.tipoPago}}</td>
+				<td>{{producto.creado | date('d-m-y')}}</td>
+				<td class="text-center">
+					<a id="{{producto.id}}" class="btn btn-danger boton-eliminar {% if is_granted('ROLE_USER') %}{{'disabled'}}{% endif %}" href="#"><span class="glyphicon glyphicon-remove"></span></a>
+				</td>
+			</tr>
+		{% endfor %}
+    </tbody>
+    <tfoot>
+    	<tr>
+    		<td colspan="4"><strong>Total dinero en ventas: Bs {{ costoTotal | number_format(2, ',', '.') }}</strong></td>
+    		<td colspan="5" class="text-center">
+				<div class="row">
+						<div class="col-xs-12">
+							<a class="btn btn-warning {% if is_granted('ROLE_USER') %}{{'disabled'}}{% endif %}" href="#" id="reiniciar"><span class="glyphicon glyphicon-repeat"></span> Reiniciar registro de ventas</a>
+							<a class="btn btn-primary" href="{{ path('registro') }}" id="guardar"><span class="glyphicon glyphicon-save"></span> Guardar registro de ventas</a>
+						</div>
+				</div>		
+    		</td>
+    	</tr>
+    </tfoot>
+  </table>
+</div>
+<div class="navigation">
+    {{ knp_pagination_render(pagination) }}
+</div>
+		<script type="text/javascript">
+			$(document).ready(function(){
+					$('#reiniciar').click(function(e){
+						e.preventDefault();
+						//obtenemos valores para pasarlos a la funcion post
+						var url = "{{ path('eliminar_registro') }}";
+						//ejecutamos la peticion mediante post para restar el producto
+						//confirmacion con bootbox
+						bootbox.confirm({
+    						message: "¿Seguro quieres eliminar el registro total?",
+    						buttons: {
+        						confirm: {
+            						label: 'Si',
+            						className: 'btn-success'
+        						},
+        						cancel: {
+            						label: 'No',
+            						className: 'btn-danger'
+        						}
+    						},
+    						callback: function (result) {
+        							if(result){
+										$.post(url, {borrar : 1}, function(datos){
+											bootbox.alert({
+												message: '<p class="text-success">'+datos.mensaje+'<span class="glyphicon glyphicon-ok-	sign"></span></p>',
+												className: 'bb-alternate-modal'
+											});
+											location.reload();
+										})
+											.fail(function(jqXHR, textStatus, errorThrown){
+												var datos = jQuery.parseJSON(jqXHR.responseText);
+												bootbox.alert({
+													message: '<p class="text-danger">'+datos.mensaje+' <span class="glyphicon glyphicon-exclamation-sign"></span></p>',
+													className: 'bb-alternate-modal'
+												});
+
+											});
+        							}
+    						}
+						});
+					});
+
+					$('.boton-eliminar').click(function(e){
+						e.preventDefault();
+						//obtenemos id para enviar por la url
+						var id = $(this).attr('id');
+						var url = "{{ path('registro_eliminar', {'id' : ':id'}) }}";
+						var urltotal = url.replace(':id', id);
+						//ejecutamos la peticion mediante post para restar el producto
+						//confirmacion con bootbox
+						bootbox.confirm({
+    						message: "¿Estas seguro de elimar esta venta?",
+    						buttons: {
+        						confirm: {
+            						label: 'Si',
+            						className: 'btn-success'
+        						},
+        						cancel: {
+            						label: 'No',
+            						className: 'btn-danger'
+        						}
+    						},
+    						callback: function (result) {
+        						if(result){
+
+									$.post(urltotal, function(data){
+										bootbox.alert('<p class="text-success">'+data.mensaje+'<span class="glyphicon glyphicon-ok-	sign"></span></p>');
+										location.reload();
+									}).fail(function(jqXHR, textStatus, errorThrown) {
+										var datos = jQuery.parseJSON(jqXHR.responseText);
+
+										bootbox.alert({
+											message: '<p class="text-danger">'+datos.mensaje+' <span class="glyphicon glyphicon-exclamation-sign"></span></p>',
+											className: 'bb-alternate-modal'
+										});
+  									});	
+        						}
+    						}
+						});
+					});
+
+			});
+
+		</script>  
+{% endblock %}
