@@ -1,11 +1,11 @@
 parameters:
-    database_host: 127.0.0.1
+    database_host: localhost
     database_port: null
-    database_name: msm
-    database_user: root
-    database_password: teamo0707
+    database_name: tomatehk_msm
+    database_user: tomatehk
+    database_password: 26066130
     mailer_transport: smtp
-    mailer_host: 127.0.0.1
+    mailer_host: localhost
     mailer_user: null
     mailer_password: null
     secret: 134359f5d0fc245ef69586791bfb2109
